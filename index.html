@@ -9,9 +9,10 @@
         body {
             margin: 0;
             display: flex;
-            justify-content: center;
-            align-items: center;
             flex-direction: column;
+            justify-content: center;
+            /* Centre verticalement */
+            align-items: center;
             height: 100vh;
             background-color: #f0f0f0;
             position: relative;
@@ -34,11 +35,13 @@
 
         #phrase {
             position: absolute;
-            bottom: 20px;
+            bottom: 10px;
+            /* Distance depuis le bas de l'écran */
             font-size: 24px;
             font-family: Arial, sans-serif;
             text-align: center;
-            width: 100%;
+            width: 90%;
+            /* Limiter la largeur du texte */
             padding: 10px;
             background-color: rgba(0, 0, 0, 0.7);
             /* Fond noir semi-transparent */
