@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Les Motivations d'Élise</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f0f0f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        #title {
+            position: absolute;
+            top: 20px;
+            font-size: 32px;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            width: 100%;
+            color: #333;
+        }
+
+        #phrase {
+            position: absolute;
+            bottom: 20px;
+            font-size: 24px;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            width: 100%;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            /* Fond noir semi-transparent */
+            color: #fff;
+            /* Texte blanc pour contraste */
+            transition: transform 0.3s ease;
+            /* Ajout d'une transition */
+            opacity: 0;
+            /* Commence transparent */
+            transform: translateY(20px);
+            /* Se déplace légèrement vers le bas au départ */
+            animation: fadeIn 0.5s forwards;
+            /* Animation de fade in */
+        }
+
+        /* Animation de fondu */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                /* transform: translateY(20px); */
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Animation de scintillement */
+        @keyframes sparkle {
+            0% {
+                color: #fff;
+            }
+
+            50% {
+                color: #ffcc00;
+            }
+
+            100% {
+                color: #fff;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1 id="title">Les Motivations d'Élise</h1>
+    <div id="container"></div>
+    <div id="phrase">Cliquez pour lancer le dé !</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Configuration de la scène
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Redimensionner le canvas en fonction de la taille de la fenêtre
+        window.addEventListener('resize', () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
+
+        // Création du dé (cube) avec une échelle plus grande
+        const geometry = new THREE.BoxGeometry();
+        const materials = [
+            new THREE.MeshBasicMaterial({ color: 0xff0000 }), // Face 1 (Rouge)
+            new THREE.MeshBasicMaterial({ color: 0x00ff00 }), // Face 2 (Vert)
+            new THREE.MeshBasicMaterial({ color: 0x0000ff }), // Face 3 (Bleu)
+            new THREE.MeshBasicMaterial({ color: 0xffff00 }), // Face 4 (Jaune)
+            new THREE.MeshBasicMaterial({ color: 0xff00ff }), // Face 5 (Rose)
+            new THREE.MeshBasicMaterial({ color: 0x00ffff })  // Face 6 (Cyan)
+        ];
+        const dice = new THREE.Mesh(geometry, materials);
+
+        // Augmenter la taille du dé
+        dice.scale.set(2, 2, 2); // Agrandit le dé par 2x sur chaque axe
+        scene.add(dice);
+
+        // Position de la caméra pour voir tout le dé
+        camera.position.z = 8; // Reculer la caméra pour bien voir le dé agrandi
+
+        let isRolling = false;
+        let rotationSpeed = 0.05;
+
+        // Animation du dé
+        function animate() {
+            if (isRolling) {
+                dice.rotation.x += rotationSpeed;
+                dice.rotation.y += rotationSpeed;
+            }
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        // Table des phrases aléatoires
+        const phrases = [
+            "Phrase 1 : La vie est belle.",
+            "Phrase 2 : Chaque jour est une nouvelle chance.",
+            "Phrase 3 : Reste positif.",
+            "Phrase 4 : Crois en toi.",
+            "Phrase 5 : Le succès est proche.",
+            "Phrase 6 : Ne jamais abandonner."
+        ];
+
+        // Fonction pour générer une rotation aléatoire alignée sur une face entière
+        function randomFaceRotation() {
+            // Génère un nombre entier aléatoire entre 0 et 3, pour les multiples de 90 degrés
+            const randomX = Math.floor(Math.random() * 4);  // 0, 1, 2, ou 3
+            const randomY = Math.floor(Math.random() * 4);  // 0, 1, 2, ou 3
+
+            // Applique la rotation en radians (multiples de π/2 pour chaque face)
+            dice.rotation.x = randomX * (Math.PI / 2);
+            dice.rotation.y = randomY * (Math.PI / 2);
+        }
+
+        // Fonction pour lancer le dé
+        function rollDice() {
+            if (isRolling) return;  // Empêche de relancer si le dé est déjà en train de rouler
+            isRolling = true;
+            rotationSpeed = 0.03;  // Vitesse de rotation plus rapide pour le début
+
+            // Arrêter la rotation après 3 secondes
+            setTimeout(() => {
+                rotationSpeed = 0;  // Arrêter la rotation
+                randomFaceRotation();  // Ajuster la rotation à une face aléatoire
+                isRolling = false;
+
+                // Sélectionner une phrase aléatoire après le lancer
+                const randomIndex = Math.floor(Math.random() * phrases.length);
+                const phraseElement = document.getElementById('phrase');
+                phraseElement.textContent = phrases[randomIndex];
+
+                // Appliquer l'animation fade-in et le scintillement
+                phraseElement.style.opacity = 0; // Réinitialiser l'opacité
+                phraseElement.style.transform = 'translateY(20px)'; // Réinitialiser la position
+                void phraseElement.offsetWidth; // Forcer le reflow
+                phraseElement.style.opacity = 1; // Réafficher avec fondu
+                phraseElement.style.transform = 'translateY(0)'; // Remonter
+                phraseElement.style.animation = 'sparkle 1s infinite'; // Applique l'animation scintillante
+
+                // Arrêter l'effet scintillant après 3 secondes
+                setTimeout(() => {
+                    phraseElement.style.animation = ''; // Retire l'animation
+                }, 3000); // 3 secondes
+
+            }, 3000);  // Le dé tourne pendant 3 secondes
+
+            // Réinitialiser le texte pour le prochain lancer
+            document.getElementById('phrase').textContent = "Lancer en cours...";
+        }
+
+        // Ajouter un événement pour lancer le dé au clic
+        document.addEventListener('click', () => {
+            rollDice();
+            document.getElementById('phrase').textContent = "Lancer en cours...";
+        });
+    </script>
+</body>
+
+</html>
