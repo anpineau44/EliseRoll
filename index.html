@@ -8,14 +8,10 @@
     <style>
         body {
             margin: 0;
-            padding: 0;
-            /* Suppression des marges et des rembourrages par défaut */
-
             display: flex;
-            flex-direction: column;
             justify-content: center;
-            /* Centre verticalement */
             align-items: center;
+            flex-direction: column;
             height: 100vh;
             background-color: #f0f0f0;
             position: relative;
@@ -38,13 +34,11 @@
 
         #phrase {
             position: absolute;
-            bottom: 100px;
-            /* Distance depuis le bas de l'écran */
+            bottom: 20px;
             font-size: 24px;
             font-family: Arial, sans-serif;
             text-align: center;
-            width: 90%;
-            /* Limiter la largeur du texte */
+            width: 100%;
             padding: 10px;
             background-color: rgba(0, 0, 0, 0.7);
             /* Fond noir semi-transparent */
@@ -210,6 +204,11 @@
             rollDice();
             document.getElementById('phrase').textContent = "Lancer en cours...";
         });
+
+        // Faire défiler la page vers le bas au chargement
+        window.onload = function () {
+            window.scrollTo(0, document.body.scrollHeight);
+        };
     </script>
 </body>
 
